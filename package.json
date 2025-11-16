@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "db:push": "prisma db push",
+    "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:reset": "prisma db push --force-reset && tsx prisma/seed.ts",
+    "db:setup": "prisma generate && prisma db push && tsx prisma/seed.ts",
+    "build:safe": "SKIP_DATABASE_CHECK=true next build"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
