@@ -3,7 +3,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { DashboardStats } from '@/lib/types'
 
+// Check if we're running at build time
+const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build'
+
 export async function GET(request: NextRequest) {
+  // If building, return empty response or mock data
+  if (isBuildTime) {
+    console.log('🏗️  Build time detected, returning mock data')
+    return NextResponse.json({
+      success: true,
+      stats: getFallbackStats(),
+      ads: []
+    })
+  }
+
   try {
     console.log('🔍 Fetching ads data...')
 
@@ -208,7 +221,6 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Failed to fetch ads:', error)
-    // Return fallback data for build time
     return NextResponse.json(
       { 
         success: false,
@@ -255,3 +267,6 @@ function getFallbackStats(): DashboardStats {
     ],
   }
 }
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'

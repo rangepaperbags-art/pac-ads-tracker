@@ -56,14 +56,17 @@ function StatsCards({ stats }: { stats: DashboardStats }) {
 }
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [stats, setStats] = useState<DashboardStats | null>(getFallbackStats())
   const [activeTab, setActiveTab] = useState<'overview' | 'matrix' | 'analytics' | 'ads'>('overview')
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start with false since we have mock data
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchDashboardData()
+    // Only fetch real data in browser, not during build/SSR
+    if (typeof window !== 'undefined') {
+      fetchDashboardData()
+    }
   }, [])
 
   const fetchDashboardData = async () => {
