@@ -67,34 +67,55 @@ export default function Dashboard() {
   }, [])
 
   const fetchDashboardData = async () => {
-    try {
-      setError(null)
-      setLoading(true)
-      
-      const response = await fetch('/api/ads')
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      
-      const data = await response.json()
-      
-      if (!data.success) {
-        throw new Error(data.error || 'API returned unsuccessful response')
-      }
-      
-      if (!data.stats) {
-        throw new Error('No stats data in response')
-      }
-      
+  try {
+    setError(null)
+    setLoading(true)
+    
+    const response = await fetch('/api/ads')
+    const data = await response.json()
+    
+    // Even if the API returns an error, it might have fallback data
+    if (data.stats) {
       setStats(data.stats)
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
-      setError(error instanceof Error ? error.message : 'Unknown error occurred')
-    } finally {
-      setLoading(false)
+    } else if (!data.success) {
+      throw new Error(data.error || 'API returned unsuccessful response')
+    } else {
+      throw new Error('No stats data in response')
     }
+  } catch (error) {
+    console.error('Failed to fetch dashboard data:', error)
+    // Use fallback data for demonstration
+    setStats(getFallbackStats())
+    setError('Using demo data - ' + (error instanceof Error ? error.message : 'API unavailable'))
+  } finally {
+    setLoading(false)
   }
+}
+
+// Add fallback stats function to Dashboard component
+function getFallbackStats(): DashboardStats {
+  return {
+    totalSpend: 10500000,
+    totalAds: 14,
+    openAISpend: 3430000,
+    metaSpend: 7070000,
+    recentAds: [],
+    platformBreakdown: [
+      { platform: 'FACEBOOK', spend: 2520000, count: 3 },
+      { platform: 'YOUTUBE', spend: 1700000, count: 3 },
+      { platform: 'TV_AD_ARCHIVE', spend: 3050000, count: 2 },
+      { platform: 'FEC', spend: 1200000, count: 1 },
+      { platform: 'ADIMPACT', spend: 1130000, count: 2 },
+      { platform: 'OPENSECRETS', spend: 580000, count: 2 },
+      { platform: 'ACLU_WATCH', spend: 320000, count: 1 },
+    ],
+    superPACBreakdown: [
+      { superPAC: 'Leading the Future', funder: 'OpenAI+a16z', spend: 3430000, count: 4 },
+      { superPAC: 'American Technology Excellence Project', funder: 'Meta', spend: 3850000, count: 4 },
+      { superPAC: 'Mobilising Economic Transformation Across America', funder: 'Meta', spend: 3220000, count: 6 },
+    ],
+  }
+}
 
   // Filter ads based on selected platforms
   const getFilteredAds = () => {
