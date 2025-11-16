@@ -7,31 +7,32 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Starting seed with mock data...')
 
+  // First, delete existing data to avoid conflicts
+  await prisma.adSyncLog.deleteMany()
+  await prisma.politicalAd.deleteMany()
+  await prisma.superPAC.deleteMany()
+
+  console.log('🗑️  Cleared existing data')
+
   // Create Super PACs
-  const openAISuperPAC = await prisma.superPAC.upsert({
-    where: { name: 'Leading the Future' },
-    update: {},
-    create: {
+  const openAISuperPAC = await prisma.superPAC.create({
+    data: {
       name: 'Leading the Future',
       funder: 'OpenAI+a16z',
       description: 'Super PAC funded by OpenAI and Andreessen Horowitz focusing on AI innovation and technology leadership'
     }
   })
 
-  const metaSuperPAC1 = await prisma.superPAC.upsert({
-    where: { name: 'American Technology Excellence Project' },
-    update: {},
-    create: {
+  const metaSuperPAC1 = await prisma.superPAC.create({
+    data: {
       name: 'American Technology Excellence Project',
       funder: 'Meta',
       description: 'Meta-funded Super PAC advocating for technology policy and digital innovation'
     }
   })
 
-  const metaSuperPAC2 = await prisma.superPAC.upsert({
-    where: { name: 'Mobilising Economic Transformation Across America' },
-    update: {},
-    create: {
+  const metaSuperPAC2 = await prisma.superPAC.create({
+    data: {
       name: 'Mobilising Economic Transformation Across America',
       funder: 'Meta',
       description: 'Meta-funded Super PAC focused on economic transformation through technology'

@@ -10,8 +10,8 @@ datasource db {
 
 model SuperPAC {
   id          String   @id @default(cuid())
-  name        String
-  funder      String   // "OpenAI+a16z" or "Meta"
+  name        String   @unique // Add unique constraint
+  funder      String
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
