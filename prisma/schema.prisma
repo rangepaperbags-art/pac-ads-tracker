@@ -1,0 +1,78 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model SuperPAC {
+  id          String   @id @default(cuid())
+  name        String
+  funder      String   // "OpenAI+a16z" or "Meta"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  politicalAds PoliticalAd[]
+  
+  @@map("super_pacs")
+}
+
+model PoliticalAd {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  platform    String   // Changed from Platform enum to String
+  platformAdId String?
+  superPACId  String
+  amount      Float
+  targetAudience String?
+  geographicTarget String?
+  startDate   DateTime
+  endDate     DateTime?
+  impressions BigInt?
+  spend       Float?
+  adUrl       String?
+  thumbnailUrl String?
+  metadata    String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  superPAC SuperPAC @relation(fields: [superPACId], references: [id], onDelete: Cascade)
+  
+  @@map("political_ads")
+}
+
+model AdSyncLog {
+  id        String   @id @default(cuid())
+  platform  String   // Changed from Platform enum to String
+  status    String   // Changed from SyncStatus enum to String
+  recordsFetched Int
+  error     String?
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+  
+  @@map("ad_sync_logs")
+}
+
+// Remove the enum definitions since SQLite doesn't support them
+// enum Platform {
+//   FACEBOOK
+//   YOUTUBE
+//   FEC
+//   OPENSECRETS
+//   ADIMPACT
+//   TV_AD_ARCHIVE
+//   ACLU_WATCH
+// }
+
+// enum SyncStatus {
+//   PENDING
+//   RUNNING
+//   COMPLETED
+//   FAILED
+// }
