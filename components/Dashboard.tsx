@@ -8,6 +8,8 @@ import DataSync from './DataSync'
 import PlatformFilter from './PlatformFilter'
 import PlatformAnalytics from './PlatformAnalytics'
 import PlatformSpendingMatrix from './PlatformSpendingMatrix'
+import AdsTab from './AdsTab'
+import AnalyticsTab from './AnalyticsTab'
 import DemoSummary from './DemoSummary'
 
 // Simple stats cards component
@@ -55,7 +57,7 @@ function StatsCards({ stats }: { stats: DashboardStats }) {
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'matrix' | 'ads'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'matrix' | 'analytics' | 'ads'>('overview')
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -171,7 +173,8 @@ export default function Dashboard() {
             {[
               { id: 'overview' as const, name: 'Platform Analytics' },
               { id: 'matrix' as const, name: 'Spending Matrix' },
-              { id: 'ads' as const, name: 'View Ads' },
+              { id: 'analytics' as const, name: 'Performance' },
+              { id: 'ads' as const, name: 'Ad Library' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -206,41 +209,16 @@ export default function Dashboard() {
             <PlatformSpendingMatrix />
           )}
 
-          {activeTab === 'ads' && (
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Political Ads
-                  {selectedPlatforms.length > 0 && (
-                    <span className="text-sm font-normal text-gray-500 ml-2">
-                      (Filtered by {selectedPlatforms.length} platform{selectedPlatforms.length !== 1 ? 's' : ''})
-                    </span>
-                  )}
-                </h3>
-                
-                <div className="text-sm text-gray-500">
-                  Showing {filteredAds.length} of {stats.recentAds.length} ads
-                </div>
-              </div>
+          {activeTab === 'analytics' && (
+            <AnalyticsTab />
+          )}
 
-              {filteredAds.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-gray-400 mb-2">
-                    <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <p className="text-gray-500 mb-2">No ads match your current filters</p>
-                  <p className="text-sm text-gray-400">Try selecting different platforms or clearing filters</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {filteredAds.map((ad) => (
-                    <AdCard key={ad.id} ad={ad} />
-                  ))}
-                </div>
-              )}
-            </div>
+          {activeTab === 'ads' && (
+            <AdsTab 
+              filteredAds={filteredAds}
+              selectedPlatforms={selectedPlatforms}
+              stats={stats}
+            />
           )}
         </div>
       </div>

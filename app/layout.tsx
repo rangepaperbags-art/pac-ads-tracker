@@ -1,6 +1,7 @@
 // app/layout.tsx
 import './globals.css'
 import { Inter } from 'next/font/google'
+import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,15 +28,9 @@ export default function RootLayout({
                   </h1>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <a href="/" className="text-gray-700 hover:text-gray-900">
+                  <Link href="/" className="text-gray-700 hover:text-gray-900">
                     Dashboard
-                  </a>
-                  <a href="/ads" className="text-gray-700 hover:text-gray-900">
-                    All Ads
-                  </a>
-                  <a href="/analytics" className="text-gray-700 hover:text-gray-900">
-                    Analytics
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
